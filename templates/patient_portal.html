@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Portal - Medical History Recording System{% endblock %}
+{% block page_title %}Patient Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user-injured"></i> Patient Self-Service Portal
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Welcome to the Patient Portal!</strong> Here you can view your medical history, 
+                    update your information, and communicate with your healthcare providers securely.
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-medical fa-3x text-primary mb-3"></i>
+                                <h5>Medical History</h5>
+                                <p class="text-muted">View your complete medical history, including past visits, diagnoses, and treatments.</p>
+                                <button class="btn btn-primary" onclick="viewMedicalHistory()">
+                                    View Medical History
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-heartbeat fa-3x text-success mb-3"></i>
+                                <h5>Vital Signs</h5>
+                                <p class="text-muted">Track your vital signs, lab results, and other clinical measurements over time.</p>
+                                <button class="btn btn-success" onclick="viewVitalSigns()">
+                                    View Vital Signs
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-pills fa-3x text-warning mb-3"></i>
+                                <h5>Medications</h5>
+                                <p class="text-muted">View your current medications, dosages, and medication history.</p>
+                                <button class="btn btn-warning" onclick="viewMedications()">
+                                    View Medications
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shield-alt fa-3x text-info mb-3"></i>
+                                <h5>Allergies</h5>
+                                <p class="text-muted">Review your allergies and adverse reactions to medications or substances.</p>
+                                <button class="btn btn-info" onclick="viewAllergies()">
+                                    View Allergies
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-alt"></i> Upcoming Appointments
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Provider</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTable">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading appointments...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user"></i> Patient Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-user-circle fa-5x text-muted"></i>
+                </div>
+                <div id="patientInfo">
+                    <p><strong>Name:</strong> John Doe</p>
+                    <p><strong>Patient ID:</strong> P001234</p>
+                    <p><strong>Date of Birth:</strong> 1980-05-15</p>
+                    <p><strong>Age:</strong> 43</p>
+                    <p><strong>Gender:</strong> Male</p>
+                    <p><strong>Phone:</strong> (555) 123-4567</p>
+                    <p><strong>Email:</strong> john.doe@email.com</p>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-outline-primary" onclick="updatePatientInfo()">
+                        <i class="fas fa-edit"></i> Update Information
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bell"></i> Notifications
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-calendar text-primary"></i>
+                            <strong>Appointment Reminder</strong><br>
+                            <small class="text-muted">Annual checkup scheduled for tomorrow</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">New</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-vial text-success"></i>
+                            <strong>Lab Results Available</strong><br>
+                            <small class="text-muted">Your recent blood work results are ready</small>
+                        </div>
+                        <span class="badge bg-success rounded-pill">New</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-pills text-warning"></i>
+                            <strong>Medication Refill</strong><br>
+                            <small class="text-muted">Your prescription is ready for pickup</small>
+                        </div>
+                        <span class="badge bg-warning rounded-pill">New</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-comments"></i> Messages
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="sendMessage()">
+                        <i class="fas fa-envelope"></i> Send Message
+                    </button>
+                    <button class="btn btn-outline-success" onclick="viewMessages()">
+                        <i class="fas fa-inbox"></i> View Messages
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Patient Info Modal -->
+<div class="modal fade" id="updatePatientModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Patient Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updatePatientForm">
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" value="(555) 123-4567">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" value="john.doe@email.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" rows="3">123 Main St, City, State 12345</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                        <input type="text" class="form-control" id="emergencyContact" value="Jane Doe (555) 987-6543">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePatientInfo()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadAppointments();
+});
+
+function loadAppointments() {
+    // This would make API calls to get appointments
+    const appointments = [
+        {
+            date: '2024-01-20',
+            time: '10:00 AM',
+            provider: 'Dr. Smith',
+            type: 'Annual Checkup',
+            location: 'Main Clinic'
+        },
+        {
+            date: '2024-01-25',
+            time: '2:30 PM',
+            provider: 'Dr. Johnson',
+            type: 'Follow-up',
+            location: 'Main Clinic'
+        }
+    ];
+    
+    const tbody = document.getElementById('appointmentsTable');
+    tbody.innerHTML = appointments.map(appointment => `
+        <tr>
+            <td><strong>${appointment.date}</strong><br><small class="text-muted">${appointment.time}</small></td>
+            <td>${appointment.provider}</td>
+            <td><span class="badge bg-info">${appointment.type}</span></td>
+            <td>${appointment.location}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewAppointment('${appointment.date}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function viewMedicalHistory() {
+    alert('View medical history functionality would be implemented here');
+}
+
+function viewVitalSigns() {
+    alert('View vital signs functionality would be implemented here');
+}
+
+function viewMedications() {
+    alert('View medications functionality would be implemented here');
+}
+
+function viewAllergies() {
+    alert('View allergies functionality would be implemented here');
+}
+
+function updatePatientInfo() {
+    const modal = new bootstrap.Modal(document.getElementById('updatePatientModal'));
+    modal.show();
+}
+
+function savePatientInfo() {
+    // This would implement patient info saving logic
+    alert('Patient information updated successfully!');
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('updatePatientModal'));
+    modal.hide();
+}
+
+function sendMessage() {
+    alert('Send message functionality would be implemented here');
+}
+
+function viewMessages() {
+    alert('View messages functionality would be implemented here');
+}
+
+function viewAppointment(appointmentDate) {
+    alert(`View appointment for ${appointmentDate}`);
+}
+</script>
+{% endblock %}

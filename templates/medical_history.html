@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medical History - Medical History Recording System{% endblock %}
+{% block page_title %}Medical History Management{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group" role="group">
+    <button type="button" class="btn btn-primary" onclick="addMedicalHistory()">
+        <i class="fas fa-file-medical-alt"></i> Add Medical History
+    </button>
+    <button type="button" class="btn btn-outline-secondary" onclick="exportMedicalHistory()">
+        <i class="fas fa-download"></i> Export
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control" id="searchInput" placeholder="Search medical history...">
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-3">
+                <select class="form-select" id="visitTypeFilter">
+                    <option value="">All Visit Types</option>
+                    <option value="INITIAL">Initial Visit</option>
+                    <option value="FOLLOW_UP">Follow-up</option>
+                    <option value="EMERGENCY">Emergency</option>
+                    <option value="CONSULTATION">Consultation</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="dateFilter">
+                    <option value="">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="startDate" placeholder="Start Date">
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="endDate" placeholder="End Date">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-file-medical"></i> Medical History Records
+            <span class="badge bg-primary ms-2" id="recordCount">0</span>
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="medicalHistoryTable">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Visit Date</th>
+                        <th>Visit Type</th>
+                        <th>Chief Complaint</th>
+                        <th>Created By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="medicalHistoryTableBody">
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <i class="fas fa-spinner fa-spin"></i> Loading medical history records...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Medical History Form Modal -->
+<div class="modal fade" id="medicalHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Medical History Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="medicalHistoryForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="patientSelect" class="form-label">Patient *</label>
+                                <select class="form-select" id="patientSelect" required>
+                                    <option value="">Select Patient</option>
+                                    <option value="P001234">John Doe (P001234)</option>
+                                    <option value="P001235">Jane Smith (P001235)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="visitType" class="form-label">Visit Type *</label>
+                                <select class="form-select" id="visitType" required>
+                                    <option value="">Select Visit Type</option>
+                                    <option value="INITIAL">Initial Visit</option>
+                                    <option value="FOLLOW_UP">Follow-up Visit</option>
+                                    <option value="EMERGENCY">Emergency Visit</option>
+                                    <option value="CONSULTATION">Consultation</option>
+                                    <option value="ANNUAL">Annual Checkup</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="chiefComplaint" class="form-label">Chief Complaint *</label>
+                        <textarea class="form-control" id="chiefComplaint" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="hpiDuration" class="form-label">Duration</label>
+                                <input type="text" class="form-control" id="hpiDuration" placeholder="e.g., 3 days, 2 weeks">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="hpiSeverity" class="form-label">Severity (1-10)</label>
+                                <input type="number" class="form-control" id="hpiSeverity" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hpiLocation" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="hpiLocation" placeholder="Where is the problem located?">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hpiQuality" class="form-label">Quality</label>
+                        <input type="text" class="form-control" id="hpiQuality" placeholder="Describe the quality of the symptom">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hpiTiming" class="form-label">Timing</label>
+                        <input type="text" class="form-control" id="hpiTiming" placeholder="When does it occur?">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hpiContext" class="form-label">Context</label>
+                        <textarea class="form-control" id="hpiContext" rows="2" placeholder="What was the patient doing when it started?"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hpiModifyingFactors" class="form-label">Modifying Factors</label>
+                        <textarea class="form-control" id="hpiModifyingFactors" rows="2" placeholder="What makes it better or worse?"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hpiAssociatedSymptoms" class="form-label">Associated Symptoms</label>
+                        <textarea class="form-control" id="hpiAssociatedSymptoms" rows="2" placeholder="Other symptoms that occur with this problem"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="pastMedicalHistory" class="form-label">Past Medical History</label>
+                        <textarea class="form-control" id="pastMedicalHistory" rows="3" placeholder="Previous diagnoses, surgeries, hospitalizations"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="familyHistory" class="form-label">Family History</label>
+                        <textarea class="form-control" id="familyHistory" rows="3" placeholder="Family medical history"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="socialHistory" class="form-label">Social History</label>
+                        <textarea class="form-control" id="socialHistory" rows="3" placeholder="Smoking, alcohol, occupation, etc."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reviewOfSystems" class="form-label">Review of Systems</label>
+                        <textarea class="form-control" id="reviewOfSystems" rows="4" placeholder="Systematic review of symptoms by body system"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveMedicalHistory()">Save Medical History</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadMedicalHistory();
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', filterRecords);
+    document.getElementById('visitTypeFilter').addEventListener('change', filterRecords);
+    document.getElementById('dateFilter').addEventListener('change', filterRecords);
+}
+
+function loadMedicalHistory() {
+    // This would make API calls to get medical history records
+    const records = [
+        {
+            id: 'MH001',
+            patient: 'John Doe (P001234)',
+            visitDate: '2024-01-15',
+            visitType: 'Follow-up',
+            chiefComplaint: 'Chest pain and shortness of breath',
+            createdBy: 'Dr. Smith'
+        },
+        {
+            id: 'MH002',
+            patient: 'Jane Smith (P001235)',
+            visitDate: '2024-01-14',
+            visitType: 'Initial',
+            chiefComplaint: 'Annual physical examination',
+            createdBy: 'Dr. Johnson'
+        },
+        {
+            id: 'MH003',
+            patient: 'Bob Johnson (P001236)',
+            visitDate: '2024-01-13',
+            visitType: 'Emergency',
+            chiefComplaint: 'Severe headache and nausea',
+            createdBy: 'Dr. Brown'
+        }
+    ];
+    
+    displayMedicalHistory(records);
+}
+
+function displayMedicalHistory(records) {
+    const tbody = document.getElementById('medicalHistoryTableBody');
+    const count = document.getElementById('recordCount');
+    
+    count.textContent = records.length;
+    
+    if (records.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    <i class="fas fa-file-medical"></i> No medical history records found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tbody.innerHTML = records.map(record => `
+        <tr>
+            <td><strong>${record.patient}</strong></td>
+            <td>${record.visitDate}</td>
+            <td><span class="badge bg-info">${record.visitType}</span></td>
+            <td>${record.chiefComplaint}</td>
+            <td>${record.createdBy}</td>
+            <td>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-primary" onclick="viewMedicalHistory('${record.id}')" title="View">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-success" onclick="editMedicalHistory('${record.id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-info" onclick="printMedicalHistory('${record.id}')" title="Print">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filterRecords() {
+    // This would implement actual filtering logic
+    loadMedicalHistory(); // Reload for now
+}
+
+function addMedicalHistory() {
+    const modal = new bootstrap.Modal(document.getElementById('medicalHistoryModal'));
+    modal.show();
+}
+
+function saveMedicalHistory() {
+    const form = document.getElementById('medicalHistoryForm');
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    // This would implement medical history saving logic
+    alert('Medical history saved successfully!');
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('medicalHistoryModal'));
+    modal.hide();
+    loadMedicalHistory();
+}
+
+function viewMedicalHistory(recordId) {
+    alert(`View medical history record ${recordId}`);
+}
+
+function editMedicalHistory(recordId) {
+    alert(`Edit medical history record ${recordId}`);
+}
+
+function printMedicalHistory(recordId) {
+    alert(`Print medical history record ${recordId}`);
+}
+
+function exportMedicalHistory() {
+    alert('Export medical history functionality would be implemented here');
+}
+</script>
+{% endblock %}
