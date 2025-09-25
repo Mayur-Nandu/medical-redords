@@ -1,0 +1,6 @@
+2025-09-25 15:47:58 | INFO     | app.main | Application initialized
+2025-09-25 15:47:58 | INFO     | app.core.logging | Started server process [7388]
+2025-09-25 15:47:58 | INFO     | app.core.logging | Waiting for application startup.
+2025-09-25 15:47:58 | INFO     | app.core.logging | Application startup complete.
+2025-09-25 15:47:58 | INFO     | app.core.logging | Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+2025-09-25 15:48:01 | INFO     | app.core.logging | 127.0.0.1:38448 - "GET /api/v1/health/ready HTTP/1.1" 200

@@ -1,0 +1,12 @@
+from __future__ import annotations
+
+from fastapi import APIRouter
+
+from app.api.v1.routes.health import router as health_router
+
+
+api_router = APIRouter()
+
+# Health and meta endpoints
+api_router.include_router(health_router, tags=["Health"])
+
