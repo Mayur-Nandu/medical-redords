@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Medical History Recording System{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line"></i> Patient Activity Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="patientActivityChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-users"></i> Recent Patients
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Name</th>
+                                <th>Last Visit</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-patients">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie"></i> Visit Types
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="visitTypesChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-shield-alt"></i> Security Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-success">98%</h4>
+                        <small class="text-muted">Compliance Score</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info">0</h4>
+                        <small class="text-muted">Security Events</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-grid">
+                    <button class="btn btn-outline-primary btn-sm" onclick="viewSecurityReport()">
+                        <i class="fas fa-eye"></i> View Security Report
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bell"></i> Notifications
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="notifications">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <button class="btn btn-primary w-100" onclick="addNewPatient()">
+                            <i class="fas fa-user-plus"></i><br>
+                            <small>Add Patient</small>
+                        </button>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button class="btn btn-success w-100" onclick="recordMedicalHistory()">
+                            <i class="fas fa-file-medical"></i><br>
+                            <small>Medical History</small>
+                        </button>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button class="btn btn-info w-100" onclick="viewLabResults()">
+                            <i class="fas fa-vial"></i><br>
+                            <small>Lab Results</small>
+                        </button>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button class="btn btn-warning w-100" onclick="viewVitalSigns()">
+                            <i class="fas fa-heartbeat"></i><br>
+                            <small>Vital Signs</small>
+                        </button>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button class="btn btn-secondary w-100" onclick="generateReport()">
+                            <i class="fas fa-chart-bar"></i><br>
+                            <small>Reports</small>
+                        </button>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <button class="btn btn-dark w-100" onclick="viewAuditLogs()">
+                            <i class="fas fa-clipboard-list"></i><br>
+                            <small>Audit Logs</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    initializeCharts();
+});
+
+function loadDashboardData() {
+    loadRecentPatients();
+    loadNotifications();
+}
+
+function loadRecentPatients() {
+    // This would make API calls to get recent patients
+    const patientsContainer = document.getElementById('recent-patients');
+    patientsContainer.innerHTML = `
+        <tr>
+            <td>P001234</td>
+            <td>John Doe</td>
+            <td>2024-01-15</td>
+            <td><span class="badge bg-success">Active</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewPatient('P001234')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>P001235</td>
+            <td>Jane Smith</td>
+            <td>2024-01-14</td>
+            <td><span class="badge bg-warning">Follow-up</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewPatient('P001235')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>P001236</td>
+            <td>Bob Johnson</td>
+            <td>2024-01-13</td>
+            <td><span class="badge bg-success">Active</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewPatient('P001236')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+}
+
+function loadNotifications() {
+    // This would make API calls to get notifications
+    const notificationsContainer = document.getElementById('notifications');
+    notificationsContainer.innerHTML = `
+        <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                    <strong>3 Critical Lab Results</strong>
+                </div>
+                <span class="badge bg-warning rounded-pill">3</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-clock text-info"></i>
+                    <strong>5 Overdue Appointments</strong>
+                </div>
+                <span class="badge bg-info rounded-pill">5</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-shield-alt text-success"></i>
+                    <strong>Security Scan Complete</strong>
+                </div>
+                <span class="badge bg-success rounded-pill">✓</span>
+            </div>
+        </div>
+    `;
+}
+
+function initializeCharts() {
+    // Patient Activity Chart
+    const patientActivityCtx = document.getElementById('patientActivityChart').getContext('2d');
+    new Chart(patientActivityCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Patient Visits',
+                data: [65, 59, 80, 81, 56, 55],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    
+    // Visit Types Chart
+    const visitTypesCtx = document.getElementById('visitTypesChart').getContext('2d');
+    new Chart(visitTypesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Routine', 'Emergency', 'Follow-up', 'Consultation'],
+            datasets: [{
+                data: [40, 20, 25, 15],
+                backgroundColor: [
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 99, 132)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+// Quick Action Functions
+function addNewPatient() {
+    window.location.href = '/patients/new/';
+}
+
+function recordMedicalHistory() {
+    window.location.href = '/medical-history/new/';
+}
+
+function viewLabResults() {
+    window.location.href = '/clinical-data/lab-results/';
+}
+
+function viewVitalSigns() {
+    window.location.href = '/clinical-data/vital-signs/';
+}
+
+function generateReport() {
+    window.location.href = '/reports/';
+}
+
+function viewAuditLogs() {
+    window.location.href = '/audit/audit-logs/';
+}
+
+function viewPatient(patientId) {
+    window.location.href = `/patients/${patientId}/`;
+}
+
+function viewSecurityReport() {
+    window.location.href = '/reports/compliance/';
+}
+</script>
+{% endblock %}

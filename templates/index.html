@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Medical History Recording System{% endblock %}
+{% block page_title %}Welcome to Medical History Recording System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-heartbeat"></i> System Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Welcome to the Medical History Recording System, a comprehensive, 
+                    HIPAA-compliant platform for managing patient medical histories 
+                    and clinical data.
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Key Features:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Secure patient data management</li>
+                            <li><i class="fas fa-check text-success"></i> Comprehensive medical history tracking</li>
+                            <li><i class="fas fa-check text-success"></i> Clinical data integration</li>
+                            <li><i class="fas fa-check text-success"></i> HIPAA compliance monitoring</li>
+                            <li><i class="fas fa-check text-success"></i> Advanced reporting and analytics</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Security Features:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-shield-alt text-primary"></i> End-to-end encryption</li>
+                            <li><i class="fas fa-shield-alt text-primary"></i> Role-based access control</li>
+                            <li><i class="fas fa-shield-alt text-primary"></i> Comprehensive audit logging</li>
+                            <li><i class="fas fa-shield-alt text-primary"></i> Session management</li>
+                            <li><i class="fas fa-shield-alt text-primary"></i> Data retention policies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line"></i> Quick Stats
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="quick-stats">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-primary" id="total-patients">-</h3>
+                            <p class="text-muted">Total Patients</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-success" id="active-visits">-</h3>
+                            <p class="text-muted">Active Visits</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-warning" id="pending-results">-</h3>
+                            <p class="text-muted">Pending Results</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-info" id="compliance-score">-</h3>
+                            <p class="text-muted">Compliance Score</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bell"></i> Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="recent-activity">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Alerts
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="alerts">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'patients' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-user-plus"></i><br>
+                            Add New Patient
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'medical_history' %}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-file-medical-alt"></i><br>
+                            Record Medical History
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'reports' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-chart-bar"></i><br>
+                            Generate Report
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="#" class="btn btn-outline-warning w-100" onclick="showPatientSearch()">
+                            <i class="fas fa-search"></i><br>
+                            Search Patient
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load dashboard data
+    loadQuickStats();
+    loadRecentActivity();
+    loadAlerts();
+});
+
+function loadQuickStats() {
+    // This would make API calls to get actual data
+    // For now, showing placeholder data
+    document.getElementById('total-patients').textContent = '1,234';
+    document.getElementById('active-visits').textContent = '45';
+    document.getElementById('pending-results').textContent = '12';
+    document.getElementById('compliance-score').textContent = '98%';
+}
+
+function loadRecentActivity() {
+    // This would make API calls to get recent activity
+    const activityContainer = document.getElementById('recent-activity');
+    activityContainer.innerHTML = `
+        <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-user-plus text-success"></i>
+                    New patient registered
+                </div>
+                <small class="text-muted">2 min ago</small>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-file-medical text-primary"></i>
+                    Medical history updated
+                </div>
+                <small class="text-muted">15 min ago</small>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-vial text-warning"></i>
+                    Lab results received
+                </div>
+                <small class="text-muted">1 hour ago</small>
+            </div>
+        </div>
+    `;
+}
+
+function loadAlerts() {
+    // This would make API calls to get alerts
+    const alertsContainer = document.getElementById('alerts');
+    alertsContainer.innerHTML = `
+        <div class="alert alert-warning alert-sm" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            3 patients have overdue preventive care
+        </div>
+        <div class="alert alert-info alert-sm" role="alert">
+            <i class="fas fa-info-circle"></i>
+            System maintenance scheduled for tonight
+        </div>
+    `;
+}
+
+function showPatientSearch() {
+    // This would show a patient search modal
+    alert('Patient search functionality would be implemented here');
+}
+</script>
+{% endblock %}
