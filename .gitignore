@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+.pytest_cache/
+.ruff_cache/
+
+# Env
+.env
+backend/.env
+backend/.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# Poetry
+poetry.lock
+.python-version
+
+# Misc
+dist/
+build/
+node_modules/
