@@ -1,0 +1,1 @@
+# Clinical Data application - Vital signs, lab results, imaging

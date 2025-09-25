@@ -1,0 +1,50 @@
+# Medical History Recording Application - Dependencies
+
+# Core Framework
+django==4.2.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# Database
+psycopg2-binary==2.9.9
+django-encrypted-model-fields==0.6.5
+
+# Authentication & Security
+django-oauth-toolkit==1.7.1
+cryptography==41.0.7
+bcrypt==4.0.1
+django-two-factor-auth==1.15.0
+qrcode==7.4.2
+
+# API & Documentation
+drf-spectacular==0.26.5
+whitenoise==6.6.0
+
+# Data Validation & Medical Standards
+python-dateutil==2.8.2
+validators==0.22.0
+pycountry==23.12.11
+
+# File Handling & Processing
+pillow==10.2.0
+python-magic==0.4.27
+
+# Monitoring & Logging
+django-auditlog==2.2.3
+structlog==23.2.0
+
+# Testing
+pytest==7.4.3
+pytest-django==4.5.2
+pytest-cov==4.1.0
+factory-boy==3.3.0
+
+# Production
+gunicorn==21.2.0
+redis==5.0.1
+celery==5.3.4
+
+# Development
+black==23.9.1
+flake8==6.1.0
+pre-commit==3.5.0
